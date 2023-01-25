@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Lower
 
 
 class Users(models.Model):
@@ -13,6 +14,10 @@ class Users(models.Model):
 
     class Meta:
         verbose_name_plural = 'Пользователи'
+        indexes = [
+            models.Index(fields=['name'], name='name_idx'),
+            models.Index(Lower('adress').desc(), 'name', name='lower_adress_name_idx')
+        ]
 
 
 class Shop(models.Model):
@@ -32,10 +37,8 @@ class Orders(models.Model):
     shop = models.ForeignKey('Shop', on_delete=models.CASCADE, null=True)
 
     clothes = models.ManyToManyField('Clothes')
-
     class Meta:
         verbose_name_plural = 'Заказы'
-
 
 class Clothes(models.Model):
     name = models.CharField(max_length=100, verbose_name='название')
@@ -53,13 +56,11 @@ class Clothes(models.Model):
         ordering = ["-price"]
         verbose_name_plural = 'Одежда'
 
-
 class Article(models.Model):
-    article = models.IntegerField(verbose_name='артикул')
+    article = models.IntegerField(verbose_name='артикль')
     serial_number = models.CharField(max_length=50,verbose_name='серийный номер')
-
     def __str__(self):
         return self.article
 
     class Meta:
-        verbose_name_plural = 'Артикул'
+        verbose_name_plural = 'Артикль'
